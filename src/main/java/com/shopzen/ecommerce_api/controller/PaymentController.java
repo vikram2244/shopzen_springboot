@@ -18,10 +18,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class PaymentController {
 
     private final RazorpayService razorpayService;
+
     @GetMapping("/ping")
     public ResponseEntity<Map<String, String>> ping() {
         Map<String, String> response = new HashMap<>();
@@ -30,6 +30,7 @@ public class PaymentController {
         response.put("timestamp", String.valueOf(System.currentTimeMillis()));
         return ResponseEntity.ok(response);
     }
+
     @PostMapping("/create-order")
     public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request) {
         try {
@@ -51,6 +52,7 @@ public class PaymentController {
             return ResponseEntity.internalServerError().body(error);
         }
     }
+
     @PostMapping("/verify")
     public ResponseEntity<PaymentVerificationResponse> verifyPayment(@RequestBody PaymentVerificationRequest request) {
         try {

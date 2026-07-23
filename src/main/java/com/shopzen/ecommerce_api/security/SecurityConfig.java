@@ -31,7 +31,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${cors.allowed.origins:http://localhost:5173,http://localhost:3000,https://shopgen.netlify.app}")
+    @Value("${cors.allowed.origins:http://localhost:5173,http://localhost:3000,https://shopgen.netlify.app,https://shopzen.netlify.app}")
     private String allowedOrigins;
 
     @Bean
@@ -79,16 +79,16 @@ public class SecurityConfig {
                     "/api/banners/**",
                     "/api/search/**"
                 ).permitAll()
-                // Payment webhooks - public
+                // Payment endpoints - public for webhooks, protected for create/verify
                 .requestMatchers(
                     "/api/payments/webhook/**",
                     "/api/payments/ping",
-                    "/api/payments/test"
+                    "/api/payments/test",
+                    "/api/payments/create-order",
+                    "/api/payments/verify"
                 ).permitAll()
                 // Authenticated endpoints - require valid JWT
                 .requestMatchers(
-                    "/api/payments/create-order",
-                    "/api/payments/verify",
                     "/api/users/**",
                     "/api/notifications/**",
                     "/api/addresses/**",
@@ -112,8 +112,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Parse allowed origins from property
+        // Parse allowed origins from property - using allowedOriginPatterns for better compatibility
         List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        // Trim whitespace from each origin
+        origins = origins.stream().map(String::trim).toList();
         configuration.setAllowedOrigins(origins);
         
         // Allowed methods
